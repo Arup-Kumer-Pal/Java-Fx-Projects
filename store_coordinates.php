@@ -22,15 +22,9 @@ if (isset($_POST['lat']) && isset($_POST['lng']) && isset($_POST['label'])) {
     $lat = $_POST['lat'];
     $lng = $_POST['lng'];
     $label = $_POST['label'];
-    
-    // Get user_id from session table
-    $user_id_query = "SELECT user_id FROM session"; // Modify this query as per your table structure
-    $user_id_result = $conn->query($user_id_query);
-    $user_id_row = $user_id_result->fetch_assoc();
-    $user_id = $user_id_row['user_id'];
 
     // Prepare SQL statement to insert data into the table
-    $sql = "INSERT INTO map (lat, lng, label, user_id) VALUES ('$lat', '$lng', '$label', '$user_id')";
+    $sql = "INSERT INTO map (lat, lng, label) VALUES ('$lat', '$lng', '$label')";
 
     if ($conn->query($sql) === TRUE) {
         echo "New record created successfully";
@@ -51,15 +45,15 @@ if (isset($_POST['delete'])) {
     }
 }
 
-// Retrieve existing latitude, longitude, label, and user_id values from the database
-$sql = "SELECT lat, lng, label, user_id FROM map";
+// Retrieve existing latitude, longitude, and label values from the database
+$sql = "SELECT lat, lng, label FROM map";
 $result = $conn->query($sql);
 
 $coordinates = array();
 if ($result->num_rows > 0) {
     // Output data of each row
     while($row = $result->fetch_assoc()) {
-        $coordinates[] = array('lat' => $row['lat'], 'lng' => $row['lng'], 'label' => $row['label'], 'user_id' => $row['user_id']);
+        $coordinates[] = array('lat' => $row['lat'], 'lng' => $row['lng'], 'label' => $row['label']);
     }
 }
 

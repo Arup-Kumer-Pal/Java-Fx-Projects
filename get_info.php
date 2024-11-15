@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "provideraccount";
+$dbname = "useraccount";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -13,8 +13,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Retrieve data from the request table
-$sql = "SELECT name, phone FROM request";
+// Retrieve data from the request table based on the user_id
+$user_id = 3; // Replace with the desired user_id
+$sql = "SELECT name, phone FROM request WHERE user_id = $user_id";
 $result = $conn->query($sql);
 
 $data = array();

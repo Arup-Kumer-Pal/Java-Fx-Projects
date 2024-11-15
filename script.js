@@ -10,67 +10,32 @@ L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=ZnHfBprMG
     crossOrigin: true
 }).addTo(map);
 
-function togglePlaceMarkerMode() {
-    markerModeEnabled = !markerModeEnabled;
-}
 
-function deleteMarkers() {
-    // Send request to delete markers from database
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", "store_coordinates.php", true);
-    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send("delete=true");
 
-    // Remove markers from map
-    markers.forEach(function(marker) {
-        map.removeLayer(marker);
-    });
-    markers = [];
-    
-}
-
-function addMarker(latlng) {
-    var marker = L.marker(latlng).addTo(map);
-    markers.push(marker);
-
-    marker.on('click', function(e) {
-        var label = prompt("Enter label for the marker:");
-        if (label !== null) {
-            marker.bindTooltip(label).openTooltip();
-            // Send latitude, longitude, and label to PHP script using AJAX
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.open("POST", "store_coordinates.php", true);
-            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.send("lat=" + latlng.lat + "&lng=" + latlng.lng + "&label=" + encodeURIComponent(label));
+function getInfo() {
+    $.getJSON("get_info.php", function (data) {
+        console.log(data); // Add this line to log the fetched data
+        var dataText = "";
+        for (var i = 0; i < data.length; i++) {
+            dataText += "Name: " + data[i].name + ", Phone: " + data[i].phone + "\n";
         }
+        document.getElementById("dataTextArea").value = dataText;
     });
 }
 
-function requestService() {
-    // Check if there are any markers on the map
-    if (markers.length === 0) {
-        alert("Please place markers on the map before requesting a service.");
-        return; // Exit the function if no markers are present
-    }
-
-    var randomNumber = Math.floor(10000000 + Math.random() * 90000000); // Generate 8-digit random number
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", "service.php", true);
-    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send("req=" + randomNumber);
-    alert("Confirm Service!");
+// Function to display data in text field
+function showData(data) {
+    // Assuming you have an input element with id "dataTextField"
+    var textField = document.getElementById("dataTextField");
+    textField.value = data[0].name + ": " + data[0].phone; // Displaying the first item in the array as an example
 }
 
 
-function cancelService() {
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", "service.php", true);
-    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send("cancel=true");
-    // Display a popup message
-    alert("Service has been complete!.");
-    deleteMarkers();
-}
+
+
+
+
+
 
 // Function to add markers for existing coordinates
 function addExistingMarkers(coordinates) {
@@ -92,6 +57,7 @@ xmlhttp.onreadystatechange = function() {
 xmlhttp.open("GET", "get_coordinates.php", true);
 xmlhttp.send();
 
+
 function onMapClick(e) {
     if (markerModeEnabled) {
         var clickedLatLng = e.latlng;
@@ -106,3 +72,6 @@ function onMapClick(e) {
 }
 
 map.on('click', onMapClick);
+
+
+
